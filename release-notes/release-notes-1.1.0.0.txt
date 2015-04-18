@@ -1,0 +1,66 @@
+Release notes version 1.1.0.0
+Release date april 14, 2015
+
+LastSuccesfulRun -> LastSuccesfulBatch
+--------------------------------------
+In the past, the module recorded the timestamp before it started ahrvesting a table, and put it in the lastsuccesfulrun 
+table after it completed harvesting the table. However there are situations where the last event never happens. For 
+example if the system goes down for a backup before that point in time. Next harvest run, the system will start in 1970 
+gain. This is a deadlock, the system will never proceed beyond that table. This release this has been fixed. The 
+harvesting process will update the the timestamp after each batch. A batch is defined as the full processing of a search 
+result set (usually 1000 result items). So even if the system goes down, this batch is preserved at all times.
+
+In order to make this work, the behaviour of the lastsuccesfulrun table has changed slightly. NodeRef based tables have 
+two rows in this table. The tablename is postfixed with _w or _a (first letter of the respective SpaceStore). The system
+forces the harvesting of the Workspace SpaceStore before the Archive SpaceStore is harvested. 
+
+As a feature, this behaviour can be switched of in the reportingRoot object (called "Reporting" directly in the 
+DataDictionary). In there, also the max number of batches per table per SpaceStore can be configured (default=50) as well 
+as the max number of results in a batch (of a search request) (default=1000)
+
+The tablename column (in lastsuccesfulrun table) is increased in size to house the longer table name. There is no migration script. (VARCHAR(50) -> VARCHAR(100)
+
+Related issues:
+A,B,C
+
+
+lndexes
+---------
+The speed of harvesting degraded (lineair?) with the number of rows in the reporting-tables. This was caused by full table 
+scans. The solution in this version is the use of Indexes. When new tables are created, these indexes are created by default.
+On existing  tables, use the JavascriptConsole and invoke: reporting.addindexesToTables(); or addindexesToTable("tablename"); 
+This will add the indexes onto the known tables, or to the given table. There is no check if the indexes already ist! (Apart 
+from MySQL, that knows the IF NOT EXIST construct...)
+
+Related Issues:
+A, B, C
+ 
+
+Force status=Done @ startup
+---------------------------
+In the past, if Alfresco went down when harvesting, the run-status of that particular table remained "Running". The admin 
+had to manually change this into "Done" (for example using JS-Console reporting.setAllStatusesDoneForTable();). Now the 
+module will update all statuses into "Done" when booting Alfresco. Since Alfresco was down, there is no meaningfull 
+'resume', all bookkeeping was in memory. This way the system becomes more self-healing.
+ 
+Related Issues:
+-none
+
+JavaScript methods
+------------------
+JavaScript methods were added to start harvesting from the JS-Console. Use reporting.harvestMoreFrequent();, 
+reporting.harvestLessFrequent(); or reporting.harvestAll();
+
+Related Issues:
+- none
+
+
+What is not in here?
+-------------------
+Related to the changes in this release, some migration path's are not provided:
+* There is NO migration of the definition of the lastsuccesfulrun table... 
+* The content of the tablename column has changed into %tablename%_w and %tablename%_a.  These rows will be added when
+  the module starts harvesting. This means the old row became pointless, AND the module wil evaluate all content of the 
+  repo, to update the lastsuccesfulrun timestamp. This can be preventedd by manually renaming the tablename into 
+  %tablename%_w. This way only the archive is fully re-scanned. 
+

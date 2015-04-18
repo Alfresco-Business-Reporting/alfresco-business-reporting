@@ -1,0 +1,9 @@
+<webscript>
+  <shortname>reporting-repository</shortname>
+  <description>Executes lucene queries</description>
+  <url>/reporting/test-repo</url>
+  <authentication>admin</authentication>
+  <family>Admin</family>
+  <default>json</default>
+  <transaction allow="readwrite" buffersize="0">required</transaction>
+</webscript>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+  <import resource="classpath:alfresco/module/org.alfresco.reporting/context/reporting-beans-context.xml" />
+  <import resource="classpath:alfresco/module/org.alfresco.reporting/context/reporting-cron-context.xml" />
+  <import resource="classpath:alfresco/module/org.alfresco.reporting/context/mybatis-context.xml" />
+  
+  <bean id="reporting_dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+     <property name="models">
+        <list>
+            <value>alfresco/module/org.alfresco.reporting/model/reporting-model.xml</value>
+        </list>
+     </property>
+  </bean>
+  
+  <bean id="reporting_configBootstrap" class="org.alfresco.web.config.WebClientConfigBootstrap" init-method="init">
+      <property name="configs">
+        <list>
+           <value>classpath:alfresco/module/org.alfresco.reporting/ui/web-client-config-custom.xml</value>
+        </list>
+      </property>
+  </bean>
+
+<!--  -->
+  <bean id="org_alfresco_reporting_bootstrapSpaces" class="org.alfresco.repo.module.ImporterModuleComponent" 
+  		parent="module.baseComponent">
+        <property name="moduleId" value="org.alfresco.reporting" />
+        <property name="name" value="importScripts" />
+        <property name="description" value="additional Data Dictcionary scripts" />
+        <property name="sinceVersion" value="0.8.0.0" />
+        <property name="appliesFromVersion" value="0.8.0.0" />
+
+        <property name="importer" ref="spacesBootstrap"/>
+        <property name="bootstrapViews">
+            <list>
+                 <props>
+                     <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/app:scripts</prop>
+                     <prop key="location">alfresco/module/org.alfresco.reporting/bootstrap/import_into_scripts.acp</prop>
+                 </props>
+                 <props>
+                     <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}</prop>
+                     <prop key="location">alfresco/module/org.alfresco.reporting/bootstrap/import_into_datadictionary.acp</prop>
+                 </props>
+            </list>
+        </property>
+    </bean>
+<!--  -->
+</beans>

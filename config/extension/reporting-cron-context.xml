@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans> 
+
+<!--  Filling the reporting database -->
+	<bean id="moreFrequentHarvestingDatabaseJob"  class="org.springframework.scheduling.quartz.JobDetailBean">
+	   <property name="jobClass">
+            <value>org.alfresco.reporting.cron.HarvestingJob</value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+			<entry key="actionService">
+				 <ref bean="ActionService" />
+			</entry>
+			<entry key="jobLockService">
+				 <ref bean="JobLockService" />
+			</entry>
+			<entry key="frequency">
+				<value>moreFrequent</value>
+			</entry>
+			<entry key="startDelayMinutes"> 
+   		               <value>${reporting.cron.startDelayMinutes}</value>
+          		</entry>
+            </map>
+        </property>
+	</bean>
+	
+     <bean id="scheduledMoreFrequentHarvestingDatabaseTrigger" class="org.alfresco.util.CronTriggerBean">
+          <property name="jobDetail">
+                  <ref bean="moreFrequentHarvestingDatabaseJob" />
+          </property>
+          <property name="scheduler">
+                  <ref bean="schedulerFactory" />
+          </property>
+          <property name="cronExpression">
+                     <value>${reporting.cron.harvest.moreFrequent}</value>
+          </property>
+     </bean>
+     
+     <!-- LessFrequent Harvesting stuff -->     
+     <bean id="lessFrequentHarvestingDatabaseJob"  class="org.springframework.scheduling.quartz.JobDetailBean">
+	   <property name="jobClass">
+            <value>org.alfresco.reporting.cron.HarvestingJob</value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+				<entry key="actionService">
+					 <ref bean="ActionService" />
+				</entry>
+				<entry key="jobLockService">
+					 <ref bean="JobLockService" />
+				</entry>
+				<entry key="frequency">
+					<value>lessFrequent</value>
+				</entry>
+				<entry key="startDelayMinutes"> 
+		                  <value>${reporting.cron.startDelayMinutes}</value>
+	          		</entry>
+            </map>
+        </property>
+	</bean>
+
+
+     <bean id="scheduledLessFrequentHarvstingDatabaseTrigger" class="org.alfresco.util.CronTriggerBean">
+          <property name="jobDetail">
+                  <ref bean="lessFrequentHarvestingDatabaseJob" />
+          </property>
+          <property name="scheduler">
+                  <ref bean="schedulerFactory" />
+		</property>
+          <property name="cronExpression">
+                  <value>${reporting.cron.harvest.lessFrequent}</value>
+          </property>
+     </bean>
+        
+<!-- Executing all reports -->
+     
+    <bean id="hourlyReportExecutionJob"  class="org.springframework.scheduling.quartz.JobDetailBean">
+	   <property name="jobClass">
+            <value>org.alfresco.reporting.cron.ReportExecutionJob</value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+				<entry key="actionService">
+					 <ref bean="ActionService" />
+				</entry>
+				<entry key="jobLockService">
+					 <ref bean="JobLockService" />
+				</entry>
+				<entry key="frequency">
+					<value>hourly</value>
+				</entry>
+				<entry key="startDelayMinutes"> 
+		                  <value>${reporting.cron.startDelayMinutes}</value>
+	          		</entry>
+            </map>
+        </property>
+	</bean>
+	
+	
+
+     <bean id="scheduledReportExecuterTriggerHourly" class="org.alfresco.util.CronTriggerBean">
+             <property name="jobDetail">
+                     <ref bean="hourlyReportExecutionJob" />
+             </property>
+             <property name="scheduler">
+                     <ref bean="schedulerFactory" />
+             </property>
+             <property name="cronExpression">
+                     <value>${reporting.execution.frequency.hourly}</value>
+             </property>
+     </bean>
+
+<!--  ###############################################  -->
+
+    <bean id="dailyReportExecutionJob"  class="org.springframework.scheduling.quartz.JobDetailBean">
+	   <property name="jobClass">
+            <value>org.alfresco.reporting.cron.ReportExecutionJob</value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+				<entry key="actionService">
+					 <ref bean="ActionService" />
+				</entry>
+				<entry key="jobLockService">
+					 <ref bean="JobLockService" />
+				</entry>
+				<entry key="frequency">
+					<value>daily</value>
+				</entry>
+				<entry key="startDelayMinutes"> 
+		                  <value>${reporting.cron.startDelayMinutes}</value>
+	          		</entry>
+            </map>
+        </property>
+	</bean>
+
+
+     <bean id="scheduledReportExecuterTriggerDaily" class="org.alfresco.util.CronTriggerBean">
+             <property name="jobDetail">
+                     <ref bean="dailyReportExecutionJob" />
+             </property>
+             <property name="scheduler">
+                     <ref bean="schedulerFactory" />
+             </property>
+             <property name="cronExpression">
+                     <value>${reporting.execution.frequency.daily}</value>
+             </property>
+     </bean>
+	
+<!--  ###############################################  -->
+
+    <bean id="weeklyReportExecutionJob"  class="org.springframework.scheduling.quartz.JobDetailBean">
+	   <property name="jobClass">
+            <value>org.alfresco.reporting.cron.ReportExecutionJob</value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+				<entry key="actionService">
+					 <ref bean="ActionService" />
+				</entry>
+				<entry key="jobLockService">
+					 <ref bean="JobLockService" />
+				</entry>
+				<entry key="frequency">
+					<value>weekly</value>
+				</entry>
+				<entry key="startDelayMinutes"> 
+		                  <value>${reporting.cron.startDelayMinutes}</value>
+	          		</entry>
+            </map>
+        </property>
+	</bean>
+	
+	
+     <bean id="scheduledReportExecuterTriggerWeekly" class="org.alfresco.util.CronTriggerBean">
+             <property name="jobDetail">
+                     <ref bean="weeklyReportExecutionJob" />
+             </property>
+             <property name="scheduler">
+                     <ref bean="schedulerFactory" />
+             </property>
+             <property name="cronExpression">
+                     <value>${reporting.execution.frequency.weekly}</value>
+             </property>
+     </bean>
+     
+<!--  ###############################################  -->
+    <bean id="monthlyReportExecutionJob"  class="org.springframework.scheduling.quartz.JobDetailBean">
+	   <property name="jobClass">
+            <value>org.alfresco.reporting.cron.ReportExecutionJob</value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+				<entry key="actionService">
+					 <ref bean="ActionService" />
+				</entry>
+				<entry key="jobLockService">
+					 <ref bean="JobLockService" />
+				</entry>
+				<entry key="frequency">
+					<value>monthly</value>
+				</entry>
+				<entry key="startDelayMinutes"> 
+		                  <value>${reporting.cron.startDelayMinutes}</value>
+	          		</entry>
+            </map>
+        </property>
+	</bean>
+	
+	
+     <bean id="scheduledReportExecuterTriggerMonthly" class="org.alfresco.util.CronTriggerBean">
+             <property name="jobDetail">
+                     <ref bean="monthlyReportExecutionJob" />
+             </property>
+             <property name="scheduler">
+                     <ref bean="schedulerFactory" />
+             </property>
+             <property name="cronExpression">
+                     <value>${reporting.execution.frequency.monthly}</value>
+             </property>
+     </bean>
+
+</beans>

@@ -1,0 +1,22 @@
+<alfresco-config area="mimetype-map">
+
+   <config evaluator="string-compare" condition="Mimetype Map">
+      <mimetypes>
+
+         <mimetype mimetype="application/xml" display="JasperReports Layout File">
+            <extension default="true">jrxml</extension>
+         </mimetype>
+
+         <mimetype mimetype="application/octet-stream" display="JasperReports Compiled Report">
+            <extension default="true">jasper</extension>
+         </mimetype>
+
+         <mimetype mimetype="application/zip" display="Pentaho Report Definition">
+            <extension default="true">prpt</extension>
+         </mimetype>
+         
+       </mimetypes>
+   </config>
+
+</alfresco-config>
+       

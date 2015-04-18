@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>reporting-database</shortname>
+  <description>Executes queries against the reporting database</description>
+  <url>/reporting/test-db</url>
+  <authentication>admin</authentication>
+  <family>Admin</family>
+  <transaction allow="readwrite" buffersize="0">required</transaction>
+</webscript>
