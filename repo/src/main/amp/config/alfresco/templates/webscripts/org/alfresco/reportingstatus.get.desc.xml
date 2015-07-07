@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Alfresco Business Reporting - Current Status</shortname>
+	<description>Shows status of the reporting tables</description>
+	<url>/reportingstatus</url>
+	<authentication>admin</authentication>
+	<transaction allow="readonly">required</transaction>
+	<family>Admin</family>
+</webscript>

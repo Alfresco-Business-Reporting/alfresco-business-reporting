@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans> 
+
+	<!--  reportingAlfresco is the dataSource to the Alfresco database -->
+	<!--  reporting is the dataSource to the BusinessReporting database -->
+	
+	<!--  MyBatis  config  -->
+
+	<bean id="alfrescoDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${db.driver}" /> 
+		<property name="url" value="${db.url}" />
+		<property name="username" value="${db.username}" />
+		<property name="password" value="${db.password}" />
+	</bean>
+
+	<bean id="reportingAlfresco_SqlSessionFactory" class="org.alfresco.ibatis.HierarchicalSqlSessionFactoryBean">
+		<property name="useLocalCaches" value="${mybatis.useLocalCaches}"/> 
+		<property name="resourceLoader" ref="dialectResourceLoader"/>
+		<property name="dataSource" ref="alfrescoDataSource"/>
+		<property name="configLocation">		<!--  #resource.dialect# -->
+			<value>classpath:alfresco/module/org.alfresco.reporting/mybatis/sqlAlfrescoMapConfig.xml</value>
+		</property>
+	</bean>
+ 
+	
+	<!--  MyBatis-Spring  sqlSessionTemplate  -->
+	<bean id="reportingAlfresco_SqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="reportingAlfresco_SqlSessionFactory"/>
+	</bean> 
+	    
+	<bean id="workflowDAO" class="org.alfresco.reporting.mybatis.impl.WorkflowDAOImpl">
+		<property name="workflowTemplate" ref= "reportingAlfresco_SqlSessionTemplate" />
+		
+	</bean>
+	
+
+	<!--  SOMEHTING SEEMS WRONG IN DE BEAN CONFIG... -->
+	<bean id="reportingDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="${reporting.db.jndiName}"/>
+	</bean>
+	
+	
+		<!--  MyBatis  config  -->
+		
+	<bean id="reportingDialectResourceLoader" class="org.alfresco.reporting.util.resource.HierarchicalResourceLoader">
+		<property name="dialectBaseClass">
+            <value>org.hibernate.dialect.Dialect</value>
+        </property>
+        <!--  Resolve the (perhaps auto detected) dialect class -->
+        <property name="datasource">
+        	<ref bean="reportingDataSource"/>
+        </property>
+        <property name="mySqlClassName" value="org.hibernate.dialect.MySQLInnoDBDialect"/>
+        <property name="postgreSqlClassName" value="org.hibernate.dialect.PostgreSQLDialect"/>
+        <property name="msSqlClassName" value="org.hibernate.dialect.SQLServerDialect"/>
+        <property name="oracleClassName" value="org.hibernate.dialect.OracleDialect"/>
+	</bean>	
+	
+	<bean id="reporting_SqlSessionFactory" 	class="org.alfresco.ibatis.HierarchicalSqlSessionFactoryBean">
+		<property name="useLocalCaches" value="${mybatis.useLocalCaches}"/> 
+		<property name="resourceLoader" ref="reportingDialectResourceLoader"/>
+		<property name="dataSource" ref="reportingDataSource"/>
+		<property name="configLocation">
+			<value>classpath:alfresco/module/org.alfresco.reporting/mybatis/sqlReportingMapConfig.xml</value>
+		</property>
+	</bean>
+
+	
+	<!--  MyBatis-Spring  sqlSessionTemplate  -->
+	<bean id="reporting_SqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="reporting_SqlSessionFactory"/>
+	</bean> 
+	    
+	<bean id="reportingDAO" class="org.alfresco.reporting.mybatis.impl.ReportingDAOImpl">
+		<property name="reportingTemplate" ref= "reporting_SqlSessionTemplate" />
+	</bean>
+	
+</beans>

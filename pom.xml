@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>org.alfresco.maven</groupId>
+		<artifactId>alfresco-sdk-parent</artifactId>
+		<version>1.1.1</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.incentro.alfresco.module</groupId>
+	<artifactId>org.alfresco.reporting.project</artifactId>
+	<description>Extract Alfresco business objects into a Reporting database, and schedule report execution</description>
+	<version>1.2.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Alfresco Business Reporting</name>
+
+	<properties>
+		<alfresco.version>4.2.3</alfresco.version>
+		<app.log.root.level>WARN</app.log.root.level>
+	</properties>
+
+	<!-- Use jgit when releasing (instead of the command-line version) -->
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.3</version>
+					<configuration>
+						<providerImplementations>
+							<git>jgit</git>
+						</providerImplementations>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.scm</groupId>
+							<artifactId>maven-scm-provider-jgit</artifactId>
+							<version>1.9.1</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-scm-plugin</artifactId>
+					<version>1.9.1</version>
+					<configuration>
+						<providerImplementations>
+							<git>jgit</git>
+						</providerImplementations>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.scm</groupId>
+							<artifactId>maven-scm-provider-jgit</artifactId>
+							<version>1.9.1</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<!-- Here we realize the connection with the Alfresco selected platform (e.g.version and edition) -->
+	<dependencyManagement>
+		<dependencies>
+			<!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
+				NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults to the latest 
+				version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
+			<dependency>
+				<groupId>${alfresco.groupId}</groupId>
+				<artifactId>alfresco-platform-distribution</artifactId>
+				<version>${alfresco.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<distributionManagement>
+		<repository>
+			<id>incentro-releases</id>
+			<url>http://cds.alfresco.incentro.com/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>incentro-snapshots</id>
+			<url>http://cds.alfresco.incentro.com/nexus/content/repositories/snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:git:https://bitbucket.org/incentro-ondemand/${project.artifactId}.git</connection>
+		<url>https://bitbucket.org/incentro-ondemand/${project.artifactId}.git</url>
+		<developerConnection>scm:git:https://bitbucket.org/incentro-ondemand/${project.artifactId}.git</developerConnection>
+	</scm>
+
+	<modules>
+		<module>repo</module>
+		<module>share</module>
+	</modules>
+
+</project>

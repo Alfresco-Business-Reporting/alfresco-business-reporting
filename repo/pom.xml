@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>com.incentro.alfresco.module</groupId>
+		<artifactId>org.alfresco.reporting.project</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.alfresco.reporting</artifactId>
+	<packaging>amp</packaging>
+	<description>Extract Alfresco business objects into a Reporting database, and schedule report execution</description>
+	<name>Alfresco Business Reporting</name>
+	
+	<properties>
+		<pentaho-reporting-version>5.1.0.0-752</pentaho-reporting-version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>4.0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-reporting-engine</groupId>
+			<artifactId>pentaho-reporting-engine-classic-core</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libloader</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libbase</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.alfresco</groupId>
+			<artifactId>alfresco-web-client</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>pentaho-releases</id>
+			<url>http://repository.pentaho.org/artifactory/repo/</url>
+		</repository>
+	</repositories>
+
+</project>

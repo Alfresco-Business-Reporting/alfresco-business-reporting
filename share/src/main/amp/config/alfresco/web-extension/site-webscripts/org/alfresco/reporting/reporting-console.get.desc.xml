@@ -1,0 +1,6 @@
+<webscript>
+  <shortname>Admin Console Reporting</shortname>
+  <description>Administration Console - Reporting Console</description>
+  <url>/components/console/reporting-console</url>
+  <family>admin-console</family>
+</webscript>
