@@ -92,9 +92,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:git:https://bitbucket.org/incentro-ondemand/${project.artifactId}.git</connection>
-		<url>https://bitbucket.org/incentro-ondemand/${project.artifactId}.git</url>
-		<developerConnection>scm:git:https://bitbucket.org/incentro-ondemand/${project.artifactId}.git</developerConnection>
+		<connection>scm:git:https://github.com/Alfresco-Business-Reporting/alfresco-business-reporting.git</connection>
+		<url>https://github.com/Alfresco-Business-Reporting/alfresco-business-reporting.git</url>
+		<developerConnection>scm:git:https://github.com/Alfresco-Business-Reporting/alfresco-business-reporting.git</developerConnection>
 	</scm>
 
 	<modules>
