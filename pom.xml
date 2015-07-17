@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<parent>
 		<groupId>org.alfresco.maven</groupId>
@@ -62,12 +63,16 @@
 		</pluginManagement>
 	</build>
 
-	<!-- Here we realize the connection with the Alfresco selected platform (e.g.version and edition) -->
+	<!-- Here we realize the connection with the Alfresco selected platform 
+		(e.g.version and edition) -->
 	<dependencyManagement>
 		<dependencies>
-			<!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
-				NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults to the latest 
-				version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
+			<!-- This will import the dependencyManagement for all artifacts in the 
+				selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
+				NOTE: You still need to define dependencies in your POM, but you can omit 
+				version as it's enforced by this dependencyManagement. NOTE: It defaults 
+				to the latest version this SDK pom has been tested with, but alfresco version 
+				can/should be overridden in your project's pom -->
 			<dependency>
 				<groupId>${alfresco.groupId}</groupId>
 				<artifactId>alfresco-platform-distribution</artifactId>
@@ -79,24 +84,13 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<distributionManagement>
-		<repository>
-			<id>incentro-releases</id>
-			<url>http://cds.alfresco.incentro.com/nexus/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>incentro-snapshots</id>
-			<url>http://cds.alfresco.incentro.com/nexus/content/repositories/snapshots/</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<scm>
 		<connection>scm:git:https://github.com/Alfresco-Business-Reporting/alfresco-business-reporting.git</connection>
 		<url>https://github.com/Alfresco-Business-Reporting/alfresco-business-reporting.git</url>
 		<developerConnection>scm:git:https://github.com/Alfresco-Business-Reporting/alfresco-business-reporting.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<modules>
 		<module>repo</module>

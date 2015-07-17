@@ -312,6 +312,7 @@ public class AlfrescoReporting extends BaseScopableProcessorExtension {
 	}
 
 	private void harvest(final String frequency) {
+		logger.info("harvest "+frequency);
 		ActionService actionService = serviceRegistry.getActionService();
 		Action harvest = actionService.createAction(HarvestingExecuter.NAME);
 		harvest.setExecuteAsynchronously(true);

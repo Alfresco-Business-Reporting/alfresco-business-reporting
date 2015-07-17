@@ -18,8 +18,6 @@
 
 package org.alfresco.reporting.test;
 
-import java.util.Properties;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

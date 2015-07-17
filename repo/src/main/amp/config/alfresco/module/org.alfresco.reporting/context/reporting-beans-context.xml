@@ -19,7 +19,7 @@
 		<property name="databaseHelperBean">
 			<ref bean="alfrescoReportingDatabaseHelper" />
 		</property>
-	</bean>  
+	</bean>
 	
 	<bean id="reporting.resetDoneStatus" 
 		    class="org.alfresco.reporting.ReportingBootstrap"
