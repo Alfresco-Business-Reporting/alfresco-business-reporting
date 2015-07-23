@@ -389,7 +389,7 @@ public class ReportingDAOImpl implements ReportingDAO {
 		if (logger.isDebugEnabled())
 			logger.debug("enter getShowTables");
 		@SuppressWarnings("unchecked")
-		final List<String> results = (List<String>)template.selectList("show-tables");
+		final List<String> results = (List<String>)(List<?>)template.selectList("show-tables");
 		if (logger.isDebugEnabled()){
 			for (int i=0;i<results.size();i++){
 				logger.debug(" +"+ results.get(i));

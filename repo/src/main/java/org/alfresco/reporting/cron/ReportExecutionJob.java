@@ -27,7 +27,7 @@ import org.alfresco.repo.lock.JobLockService.JobLockRefreshCallback;
 import org.alfresco.repo.lock.LockAcquisitionException;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.reporting.ReportingModel;
-import org.alfresco.reporting.action.executer.ReportRootExecutor;
+import org.alfresco.reporting.action.executer.ReportRootExecuter;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.namespace.QName;
@@ -164,31 +164,31 @@ public class ReportExecutionJob implements Job, InitializingBean {
 				AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<Void>() {
 				    public Void doWork() {
 				    	Action action = actionService
-								.createAction(ReportRootExecutor.NAME);
+								.createAction(ReportRootExecuter.NAME);
 				    	
 				    	boolean canRun=false; // make true if run can be successful...
 						if (frequency!=null){
 							
 							if ("hourly".equals(frequency)){
-								action.setParameterValue(ReportRootExecutor.PARAM_FREQUENCY,
+								action.setParameterValue(ReportRootExecuter.PARAM_FREQUENCY,
 										frequency);
 								canRun=true;
 							} // end hourly
 							
 							if ("daily".equals(frequency)){
-								action.setParameterValue(ReportRootExecutor.PARAM_FREQUENCY,
+								action.setParameterValue(ReportRootExecuter.PARAM_FREQUENCY,
 										frequency);
 								canRun=true;
 							} // end daily
 							
 							if ("weekly".equals(frequency)){
-								action.setParameterValue(ReportRootExecutor.PARAM_FREQUENCY,
+								action.setParameterValue(ReportRootExecuter.PARAM_FREQUENCY,
 										frequency);
 								canRun=true;
 							} // end weekly
 							
 							if ("monthly".equals(frequency)){
-								action.setParameterValue(ReportRootExecutor.PARAM_FREQUENCY,
+								action.setParameterValue(ReportRootExecuter.PARAM_FREQUENCY,
 										frequency);
 								canRun=true;
 							} // end monthly
@@ -204,16 +204,16 @@ public class ReportExecutionJob implements Job, InitializingBean {
 						} // end if frequency!=null
 						else {
 							
-							action.setParameterValue(ReportRootExecutor.PARAM_FREQUENCY, "hourly");
+							action.setParameterValue(ReportRootExecuter.PARAM_FREQUENCY, "hourly");
 							actionService.executeAction(action, null);
 							
-							action.setParameterValue(ReportRootExecutor.PARAM_FREQUENCY, "daily");
+							action.setParameterValue(ReportRootExecuter.PARAM_FREQUENCY, "daily");
 							actionService.executeAction(action, null);
 		
-							action.setParameterValue(ReportRootExecutor.PARAM_FREQUENCY, "weekly");
+							action.setParameterValue(ReportRootExecuter.PARAM_FREQUENCY, "weekly");
 							actionService.executeAction(action, null);
 							
-							action.setParameterValue(ReportRootExecutor.PARAM_FREQUENCY, "monthly");
+							action.setParameterValue(ReportRootExecuter.PARAM_FREQUENCY, "monthly");
 							actionService.executeAction(action, null);
 							
 						}

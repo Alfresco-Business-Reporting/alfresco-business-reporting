@@ -45,10 +45,10 @@ public class WorkflowDAOImpl implements WorkflowDAO{
 		
 		if (null==fromDate){
 			logger.debug("getDeletedTasks - no date");
-			results = (List<String>)sessionTemplate.selectList("get-all-completed-tasks");
+			results = (List<String>)(List<?>)sessionTemplate.selectList("get-all-completed-tasks");
 		} else {
 			logger.debug("getDeletedTasks - with date " + fromDate);
-			results = (List<String>)sessionTemplate.selectList("get-completed-tasks-since", fromDate);
+			results = (List<String>)(List<?>)sessionTemplate.selectList("get-completed-tasks-since", fromDate);
 		}
 		return results;
 	}
@@ -60,10 +60,10 @@ public class WorkflowDAOImpl implements WorkflowDAO{
 	
 		if (null==fromDate){
 			logger.debug("getCreatedTasks - no date");
-			results = (List<String>)sessionTemplate.selectList("get-all-created-tasks");
+			results = (List<String>)(List<?>)sessionTemplate.selectList("get-all-created-tasks");
 		} else {
 			logger.debug("getCreatedTasks - with date " + fromDate);
-			results = (List<String>)sessionTemplate.selectList("get-created-tasks-since", fromDate);
+			results = (List<String>)(List<?>)sessionTemplate.selectList("get-created-tasks-since", fromDate);
 		}
 		return results;
 	}
@@ -81,10 +81,10 @@ public class WorkflowDAOImpl implements WorkflowDAO{
 		
 		if (null==fromDate){
 			logger.debug("getCompletedProcesses - no date");
-			results = (List<String>)sessionTemplate.selectList("get-all-completed-processes");
+			results = (List<String>)(List<?>)sessionTemplate.selectList("get-all-completed-processes");
 		} else {
 			logger.debug("getCompletedProcesses - with date " + fromDate);
-			results = (List<String>)sessionTemplate.selectList("get-completed-processes-since", fromDate);
+			results = (List<String>)(List<?>)sessionTemplate.selectList("get-completed-processes-since", fromDate);
 		}
 		return results;
 	}
@@ -96,10 +96,10 @@ public class WorkflowDAOImpl implements WorkflowDAO{
 	
 		if (null==fromDate){
 			logger.debug("getCreatedProcesses - no date");
-			results = (List<String>)sessionTemplate.selectList("get-all-created-processes");
+			results = (List<String>)(List<?>)sessionTemplate.selectList("get-all-created-processes");
 		} else {
 			logger.debug("getCreatedProcesses - with date " + fromDate);
-			results = (List<String>)sessionTemplate.selectList("get-created-processes-since", fromDate);
+			results = (List<String>)(List<?>)sessionTemplate.selectList("get-created-processes-since", fromDate);
 		}
 		return results;
 	}

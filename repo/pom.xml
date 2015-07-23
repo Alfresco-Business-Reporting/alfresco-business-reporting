@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<parent>
 		<groupId>com.incentro.alfresco.module</groupId>
@@ -13,12 +14,26 @@
 	<packaging>amp</packaging>
 	<description>Extract Alfresco business objects into a Reporting database, and schedule report execution</description>
 	<name>Alfresco Business Reporting</name>
-	
+
 	<properties>
-		<pentaho-reporting-version>5.1.0.0-752</pentaho-reporting-version>
+		<pentaho-reporting-version>5.0.1-stable</pentaho-reporting-version>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>${alfresco.groupId}</groupId>
+			<artifactId>alfresco-repository</artifactId>
+			<version>${alfresco.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+<!-- 		<dependency>
+			<groupId>${alfresco.groupId}</groupId>
+			<artifactId>alfresco</artifactId>
+			<version>${alfresco.version}</version>
+			<type>war</type>
+		</dependency> -->
 
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
@@ -33,8 +48,20 @@
 		</dependency>
 
 		<dependency>
+			<groupId>pentaho-reporting-engine</groupId>
+			<artifactId>pentaho-reporting-engine-wizard-core</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libloader</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libserializer</artifactId>
 			<version>${pentaho-reporting-version}</version>
 		</dependency>
 
@@ -43,20 +70,49 @@
 			<artifactId>libbase</artifactId>
 			<version>${pentaho-reporting-version}</version>
 		</dependency>
-		
+
 		<dependency>
-			<groupId>org.alfresco</groupId>
-			<artifactId>alfresco-web-client</artifactId>
-			<scope>provided</scope>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libformula</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libfonts</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libformat</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libdocbundle</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libxml</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libswing</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>librepository</artifactId>
+			<version>${pentaho-reporting-version}</version>
 		</dependency>
 
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>pentaho-releases</id>
-			<url>http://repository.pentaho.org/artifactory/repo/</url>
-		</repository>
-	</repositories>
 
 </project>

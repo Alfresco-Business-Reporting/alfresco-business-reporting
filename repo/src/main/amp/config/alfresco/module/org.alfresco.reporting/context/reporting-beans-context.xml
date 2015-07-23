@@ -66,7 +66,7 @@
 	
 
 	<bean id="report-root-executer"
-		class="org.alfresco.reporting.action.executer.ReportRootExecutor"
+		class="org.alfresco.reporting.action.executer.ReportRootExecuter"
 		parent="action-executer">
 		<property name="searchService">
 			<ref bean="SearchService" />
@@ -80,10 +80,35 @@
 		<property name="reportingHelper">
 			<ref bean="ReportingHelper" />
 		</property>
-	</bean>	
+	</bean>
+	
+	<bean id="all-frequencies-report-root-executer"
+		class="org.alfresco.reporting.action.executer.AllFrequenciesRootExecuter"
+		parent="action-executer">
+		<property name="actionService">
+			<ref bean="ActionService" />
+		</property>
+	</bean>
+
+	<bean id="harvest-all-executer"
+		class="org.alfresco.reporting.action.executer.HarvestAllExecuter"
+		parent="action-executer">
+		<property name="searchService">
+			<ref bean="SearchService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="NodeService" />
+		</property>
+		<property name="actionService">
+			<ref bean="ActionService" />
+		</property>
+		<property name="reportingHelper">
+			<ref bean="ReportingHelper" />
+		</property>
+	</bean>
 
 	<bean id="report-container-executer"
-		class="org.alfresco.reporting.action.executer.ReportContainerExecutor"
+		class="org.alfresco.reporting.action.executer.ReportContainerExecuter"
 		parent="action-executer">
 		<property name="searchService">
 			<ref bean="SearchService" />
@@ -99,6 +124,9 @@
 		</property>
 		<property name="reportingHelper">
 			<ref bean="ReportingHelper" />
+		</property>
+			<property name="versionService">
+			<ref bean="VersionService" />
 		</property>
 	</bean>
 		

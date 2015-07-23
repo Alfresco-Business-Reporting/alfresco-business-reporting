@@ -34,7 +34,7 @@ import org.alfresco.reporting.Constants;
 import org.alfresco.reporting.ReportingHelper;
 import org.alfresco.reporting.ReportingModel;
 import org.alfresco.reporting.action.executer.HarvestingExecuter;
-import org.alfresco.reporting.action.executer.ReportRootExecutor;
+import org.alfresco.reporting.action.executer.ReportRootExecuter;
 import org.alfresco.reporting.db.DatabaseHelperBean;
 import org.alfresco.reporting.mybatis.SelectFromWhere;
 import org.alfresco.service.ServiceRegistry;
@@ -346,7 +346,7 @@ public class AlfrescoReporting extends BaseScopableProcessorExtension {
 
 	private void executeReport(String frequency) {
 		ActionService actionService = serviceRegistry.getActionService();
-		Action execute = actionService.createAction(ReportRootExecutor.NAME);
+		Action execute = actionService.createAction(ReportRootExecuter.NAME);
 		execute.setExecuteAsynchronously(true);
 		execute.setParameterValue(HarvestingExecuter.PARAM_FREQUENCY, frequency);
 		actionService.executeAction(execute, getReportingRoot());

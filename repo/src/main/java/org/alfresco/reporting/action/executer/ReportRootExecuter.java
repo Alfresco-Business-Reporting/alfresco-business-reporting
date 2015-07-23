@@ -59,7 +59,7 @@ import org.apache.commons.logging.LogFactory;
  * @author tpeelen
  *
  */
-public class ReportRootExecutor extends ActionExecuterAbstractBase {
+public class ReportRootExecuter extends ActionExecuterAbstractBase {
 
 	public static final String PARAM_FREQUENCY = "executionFrequency";
 	public static final String NAME = "report-root-executer";
@@ -70,7 +70,7 @@ public class ReportRootExecutor extends ActionExecuterAbstractBase {
 	private ReportingHelper reportingHelper;
 	private int startDelayMinutes=0;
 	
-	private static Log logger = LogFactory.getLog(ReportRootExecutor.class);
+	private static Log logger = LogFactory.getLog(ReportRootExecuter.class);
 	
 	/**
 	 * This is where the action is.
@@ -125,9 +125,9 @@ public class ReportRootExecutor extends ActionExecuterAbstractBase {
 				// Start a reportingContainerExecuter for the given noderef. 
 				// Pass the NodeRef of the ReportingRoot since we know who that is.  
 				Action customAction = actionService.createAction(
-						ReportContainerExecutor.NAME);
+						ReportContainerExecuter.NAME);
 				//action.setParameterValue(
-				//		ReportContainerExecutor.REPORTING_CONTAINER_NODEREF, containerRef);
+				//		ReportContainerExecuter.REPORTING_CONTAINER_NODEREF, containerRef);
 				
 				actionService.executeAction(customAction, containerRef);
 			} // end if reportingExecturinEnabled()

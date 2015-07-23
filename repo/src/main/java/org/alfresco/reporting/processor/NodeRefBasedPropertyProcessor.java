@@ -62,6 +62,8 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.cmr.version.Version;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Sort;
 
 /**
  * This class accepts an Alfresco object (document or folder), strips out all properties and 
@@ -1096,9 +1098,12 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor  {
 				    		sp.setLanguage(language);
 							sp.addStore(storeRef);
 							sp.setQuery(fullQuery);
-							sp.addSort(getOrderBy(language), true);
+							//sp.addSort(getOrderBy(language), true);
 							if (maxItems>0){
 								sp.setMaxItems(maxItems);
+							}
+							if (logger.isDebugEnabled()){
+								logger.debug("Searchparameter query: "+ sp.getQuery());
 							}
 							ResultSet results = getSearchService().query(sp);
 			
@@ -1326,7 +1331,10 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor  {
 	public String getOrderBy(final String language){
 		String orderBy =" ";
 		if (SearchService.LANGUAGE_LUCENE.equalsIgnoreCase(language)){
-			orderBy += ContentModel.PROP_NODE_DBID.toString();//"@sys\\:node-dbid";
+			orderBy += ContentModel.PROP_NODE_DBID.toPrefixString();//"@sys\\:node-dbid";
+			//orderBy += "sys:node-dbid";
+			orderBy = QueryParser.escape(orderBy);
+			
 		}
 		if (SearchService.LANGUAGE_CMIS_ALFRESCO.equalsIgnoreCase(language)){
 			//TODO
