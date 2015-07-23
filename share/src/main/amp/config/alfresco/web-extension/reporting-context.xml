@@ -21,11 +21,12 @@
 			<list>
 				<value>classpath:alfresco/web-extension/site-config/reporting-config.xml</value>
 				<value>classpath:alfresco/web-extension/site-config/reporting-action-config.xml</value>
+				<value>classpath:alfresco/web-extension/site-config/reporting-indicator-config.xml</value>
 			</list>
 		</property>
 	</bean>
 
-	<!-- Evaluators -->
+<!-- Evaluators -->
 	<bean id="evaluator.reporting.hasHarvestableAspect" class="org.alfresco.web.evaluator.HasAspectEvaluator">
 		<property name="aspects">
 			<list>
@@ -33,6 +34,34 @@
 			</list>
 		</property>
 	</bean>
-
+	<bean id="evaluator.reporting.hasReportOutputableAspect" class="org.alfresco.web.evaluator.HasAspectEvaluator">
+		<property name="aspects">
+			<list>
+				<value>reporting:reportingOutputable</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="evaluator.reporting.hasReportContainerableAspect" class="org.alfresco.web.evaluator.HasAspectEvaluator">
+		<property name="aspects">
+			<list>
+				<value>reporting:reportingContainerable</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="evaluator.reporting.isContainerOrDefinition" parent="evaluator.doclib.action.chainedMatchOne">
+		<property name="evaluators">
+			<list>
+				<ref bean="evaluator.reporting.hasReportOutputableAspect" />
+				<ref bean="evaluator.reporting.hasReportContainerableAspect" />
+			</list>
+		</property>
+	</bean>
+	<bean id="evaluator.reporting.hasReportingRootableAspect" class="org.alfresco.web.evaluator.HasAspectEvaluator">
+		<property name="aspects">
+			<list>
+				<value>reporting:reportingRootable</value>
+			</list>
+		</property>
+	</bean>
 
 </beans>

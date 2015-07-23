@@ -17,7 +17,8 @@
 	<name>Alfresco Business Reporting</name>
 
 	<properties>
-		<alfresco.version>4.2.3</alfresco.version>
+		<!-- <alfresco.version>4.2.0</alfresco.version> -->
+	
 		<app.log.root.level>WARN</app.log.root.level>
 	</properties>
 
