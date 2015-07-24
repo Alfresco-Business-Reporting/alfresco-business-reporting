@@ -17,8 +17,8 @@
 	<name>Alfresco Business Reporting</name>
 
 	<properties>
-		<!-- <alfresco.version>4.2.0</alfresco.version> -->
-	
+		<alfresco.version>4.2.e</alfresco.version>
+
 		<app.log.root.level>WARN</app.log.root.level>
 	</properties>
 
@@ -82,6 +82,19 @@
 				<scope>import</scope>
 			</dependency>
 
+			<dependency>
+				<groupId>${alfresco.groupId}</groupId>
+				<artifactId>alfresco-repository</artifactId>
+				<version>${alfresco.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+<!-- 			<dependency>
+				<groupId>${alfresco.groupId}</groupId>
+				<artifactId>alfresco</artifactId>
+				<version>${alfresco.version}</version>
+				<type>war</type>
+			</dependency> -->
 		</dependencies>
 	</dependencyManagement>
 
@@ -97,5 +110,16 @@
 		<module>repo</module>
 		<module>share</module>
 	</modules>
+
+	<repositories>
+		<repository>
+			<id>pentaho-releases</id>
+			<url>http://repository.pentaho.org/artifactory/repo/</url>
+		</repository>
+		<repository>
+			<id>alfresco</id>
+			<url>https://artifacts.alfresco.com/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
 
 </project>
