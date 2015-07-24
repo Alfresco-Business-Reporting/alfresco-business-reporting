@@ -1,0 +1,82 @@
+<alfresco-config>
+
+	<!-- Custom DocLibActions config section -->
+	<config evaluator="string-compare" condition="DocLibActions">
+		<actions>
+			<action id="harvesting-executer" type="javascript"
+				label="reporting.actions.document.fillReportingDatabase" icon="database_go">
+				<param name="function">onActionSimpleRepoAction</param>
+				<param name="action">harvesting-executer</param>
+				<param name="successMessage">reporting.actions.fillReportingDatabase.succes
+				</param>
+				<param name="failureMessage">reporting.actions.fillReportingDatabase.failure
+				</param>
+				<evaluator>evaluator.reporting.hasHarvestableAspect</evaluator>
+			</action>
+			<action id="report-executer" type="javascript"
+				label="reporting.actions.execute-report" icon="document_next">
+				<param name="function">onActionSimpleRepoAction</param>
+				<param name="action">report-container-executer</param>
+				<param name="successMessage">reporting.actions.execute-report.succes
+				</param>
+				<param name="failureMessage">reporting.actions.execute-report.failure
+				</param>
+				<evaluator>evaluator.reporting.isContainerOrDefinition</evaluator>
+			</action>
+			<action id="report-root-executer" type="javascript"
+				label="reporting.actions.execute-report-root-reports" icon="refresh_all">
+				<param name="function">onActionSimpleRepoAction</param>
+				<param name="action">all-frequencies-report-root-executer</param>
+				<param name="successMessage">reporting.actions.execute-report-root-reports.succes
+				</param>
+				<param name="failureMessage">reporting.actions.execute-report-root-reports.failure
+				</param>
+				<evaluator>evaluator.reporting.hasReportingRootableAspect
+				</evaluator>
+			</action>
+			<action id="harvest-all-executer" type="javascript"
+				label="reporting.actions.execute-report-root-harvest" icon="database_go">
+				<param name="function">onActionSimpleRepoAction</param>
+				<param name="action">harvest-all-executer</param>
+				<param name="successMessage">reporting.actions.execute-report-root-harvest.succes
+				</param>
+				<param name="failureMessage">reporting.actions.execute-report-root-harvest.failure
+				</param>
+				<evaluator>evaluator.reporting.hasReportingRootableAspect
+				</evaluator>
+			</action>
+		</actions>
+		<actionGroups>
+			<actionGroup id="document-browse">
+				<action id="harvesting-executer" />
+				<action id="report-executer" />
+				<action id="report-root-executer" />
+			</actionGroup>
+			<actionGroup id="document-details">
+				<action id="harvesting-executer" />
+				<action id="report-executer" />
+				<action id="report-root-executer" />
+			</actionGroup>
+			<actionGroup id="folder-browse">
+				<action id="report-executer" />
+				<action id="report-root-executer" />
+				<action id="harvest-all-executer" />
+			</actionGroup>
+			<actionGroup id="folder-details">
+				<action id="report-executer" />
+				<action id="report-root-executer" />
+				<action id="harvest-all-executer" />
+			</actionGroup>
+		</actionGroups>
+	</config>
+
+	<config evaluator="string-compare" condition="DocumentLibrary">
+		<indicators>
+			<indicator id="reports">
+				<evaluator>evaluator.reporting.hasReportingRootableAspect
+				</evaluator>
+			</indicator>
+		</indicators>
+	</config>
+
+</alfresco-config>

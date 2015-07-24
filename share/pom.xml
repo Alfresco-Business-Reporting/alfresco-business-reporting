@@ -20,13 +20,4 @@
 		<maven.tomcat.port>80</maven.tomcat.port>
 	</properties>
 
-	<dependencies>
-
-		<dependency>
-			<groupId>org.alfresco</groupId>
-			<artifactId>share</artifactId>
-			<type>war</type>
-		</dependency>
-	</dependencies>
-
 </project>
