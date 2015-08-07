@@ -28,6 +28,14 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.3</version>
 					<configuration>
@@ -89,12 +97,8 @@
 				<scope>provided</scope>
 			</dependency>
 
-<!-- 			<dependency>
-				<groupId>${alfresco.groupId}</groupId>
-				<artifactId>alfresco</artifactId>
-				<version>${alfresco.version}</version>
-				<type>war</type>
-			</dependency> -->
+			<!-- <dependency> <groupId>${alfresco.groupId}</groupId> <artifactId>alfresco</artifactId> 
+				<version>${alfresco.version}</version> <type>war</type> </dependency> -->
 		</dependencies>
 	</dependencyManagement>
 
