@@ -1239,6 +1239,41 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor  {
 							letsContinue = stillContinueHarvesting(loopcount, results.length());
 						} // end while letsContinue
 						
+//Start processing unindexed archive-store
+						
+						//if(storeRef.getProtocol().equals(StoreRef.PROTOCOL_ARCHIVE)){
+							
+							if (logger.isDebugEnabled())logger.debug("Start processing unindexed archive-store");
+							NodeRef archiveStoreRoot = nodeService.getRootNode(StoreRef.STORE_REF_ARCHIVE_SPACESSTORE);
+							List<ChildAssociationRef> childAssocList = nodeService.getChildAssocs(archiveStoreRoot);
+														
+							if (logger.isDebugEnabled())logger.debug("archive tablename:"+tableName);
+							if (logger.isDebugEnabled())logger.debug("Nr of childs under archiveStoreRoot:"+childAssocList.size());
+							for(ChildAssociationRef childAssocRef : childAssocList){
+								NodeRef archivedNodeRef = childAssocRef.getChildRef();
+								if (logger.isDebugEnabled())logger.debug("Adding to queue:"+archivedNodeRef);
+								//addToQueue(archivedNodeRef);
+							}
+/*							try{
+								// process the current queue
+								Properties props = processQueueDefinition(tableName);
+								if (logger.isDebugEnabled())
+									logger.debug("harvest: archive-queueDef done, setting tableDefinition");
+								
+								setTableDefinition(tableName, props);
+								if (logger.isDebugEnabled())
+									logger.debug("harvest: archive-tableDef done. Processing queue Values");
+								
+								processQueueValues(tableName);
+								
+								// prep the queue for the next run
+								resetQueue();
+							} catch (Exception e){
+								logger.info("harvest: something wrong with the noderef, skipping");
+							}*/
+						//}
+//end processing unindexed archive-store
+						
 					} // end storeProtocol
 					
 					if (getBatchTimestampEnabled() ) {
