@@ -901,7 +901,7 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor {
 							if (logger.isDebugEnabled())
 								logger.debug("Going UPDATE_VERSIONED");
 							try {
-								if (dbhb.rowExists(rl) && ) {
+								if (dbhb.rowExists(rl) ) {
 									numberOfRows = dbhb.updateVersionedIntoTable(rl);
 									// numberOfRows = dbhb.insertIntoTable(rl);
 									if (logger.isDebugEnabled())
