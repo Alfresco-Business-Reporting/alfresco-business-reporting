@@ -509,6 +509,16 @@ public class ReportingDAOImpl implements ReportingDAO {
 		int i = (Integer) template.selectOne("reporting-row-exists", sfw);
 		return i>0;
 	}
+
+	/**
+	 * Returns true if the Row with the given tablename nd isLatest=1 
+	 * has an archivedData set. 
+	 */
+	public boolean reportingArchivedDateIsEmpty(final SelectFromWhere sfw){
+		sfw.setFrom(sfw.getFrom().toLowerCase());
+		int i = (Integer) template.selectOne("reporting-archiveddate-is-empty", sfw);
+		return i>0;
+	}
 	
 	public boolean reportingRowEqualsModifiedDate(final SelectFromWhere sfw){
 		sfw.setFrom(sfw.getFrom().toLowerCase());

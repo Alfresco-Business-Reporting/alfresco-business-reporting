@@ -76,6 +76,8 @@ public interface ReportingDAO {
 	
 	public boolean reportingRowExists(SelectFromWhere sfw);
 	
+	public boolean reportingArchivedDateIsEmpty(SelectFromWhere sfw);
+	
 	public boolean reportingRowEqualsModifiedDate(SelectFromWhere sfw);
 	
 	public boolean reportingRowVersionedEqualsModifiedDate(SelectFromWhere sfw);

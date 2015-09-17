@@ -129,6 +129,13 @@
 	SELECT count(*) FROM ${from} WHERE ( sys_node_uuid like #{where} )
 </select>
 
+<select id="reporting-archiveddate-is-empty" parameterType="SelectFromWhere" resultType="int">
+	SELECT count(*) FROM ${from} 
+		WHERE ( sys_node_uuid like #{where} )
+		  AND (isLatest=1)
+		  AND (sys_archiveddate IS NULL);
+</select>
+
 <select id="reporting-row-equals-modified-date" parameterType="SelectFromWhere" resultType="int">
 	SELECT count(*) FROM ${from}
 	WHERE sys_node_uuid like #{where} 

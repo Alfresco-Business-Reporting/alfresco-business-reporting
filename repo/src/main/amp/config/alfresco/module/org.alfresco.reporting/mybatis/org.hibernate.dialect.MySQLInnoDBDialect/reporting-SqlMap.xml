@@ -26,6 +26,13 @@
 		and TABLE_SCHEMA = #{database}
 </select>
 
+<select id="reporting-archiveddate-is-empty" parameterType="SelectFromWhere" resultType="int">
+	SELECT count(*) FROM ${from} 
+		WHERE ( sys_node_uuid like #{where} )
+		  AND (isLatest=1)
+		  AND (sys_archiveddate IS NULL);
+</select>
+
 <insert id="reporting-create-empty-table" parameterType="SelectFromWhere"  flushCache="true"> 
 
 		CREATE TABLE IF NOT EXISTS ${from} ( 
