@@ -263,5 +263,18 @@
 		</property>
 	</bean>
 	
+	<bean id="harvestArchiveExecuter" class="org.alfresco.reporting.action.executer.HarvestArchiveExecuter"
+		parent="action-executer">
+		<property name="serviceRegistry">
+			<ref bean="ServiceRegistry" />
+		</property>
+		<property name="databaseHelperBean">
+			<ref bean="alfrescoReportingDatabaseHelper" />
+		</property>
+		<property name="reportingHelper">
+			<ref bean="ReportingHelper" />
+		</property>
+	</bean>
+	
 
 </beans>

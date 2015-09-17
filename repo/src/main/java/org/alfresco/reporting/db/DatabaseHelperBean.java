@@ -448,6 +448,23 @@ public class DatabaseHelperBean {
 		}	
 		return returnValue;
 	}
+	
+	public boolean nodeUUIDExists(String tablename, String uuid) throws Exception{
+		boolean returnValue = false;
+		try{
+			SelectFromWhere sfw = new SelectFromWhere(
+					null,
+					tablename.toLowerCase(),
+					uuid);
+			returnValue=reportingDAO.reportingRowExists(sfw);
+			if (logger.isDebugEnabled()) 
+				logger.debug("rowExists returning "  + returnValue);
+		} catch (Exception e) {
+			logger.fatal("Exception rowExists: " + e.getMessage());
+			throw new Exception(e);
+		}	
+		return returnValue;
+	}
 		
 	private boolean rowEqualsModifiedDate(ReportLine rl, String lastModified) throws Exception{
 		// if this query exists, there already is a valid entry. Workaround for issue that Lucene search does not return time, just date
