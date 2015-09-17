@@ -431,7 +431,7 @@ public class DatabaseHelperBean {
 		return returnString;
 	}
 	
-	public boolean rowExists( ReportLine rl) throws Exception{
+	public boolean rowExists( ReportLine rl ) throws Exception{
 		boolean returnValue = false;
 		try{
 			SelectFromWhere sfw = new SelectFromWhere(
@@ -444,6 +444,31 @@ public class DatabaseHelperBean {
 				logger.debug("rowExists returning "  + returnValue);
 		} catch (Exception e) {
 			logger.fatal("Exception rowExists: " + e.getMessage());
+			throw new Exception(e);
+		}	
+		return returnValue;
+	}
+	
+	/*
+	 * Returns true if the given UUID & isLatest=true has an empty 
+	 * archivedDate.This is to determine if the object has been archived, 
+	 * since the archive action does not modify the modified timestamp.
+	 */
+	public boolean archivedDateIsEmpty( ReportLine rl ) throws Exception{
+		boolean returnValue = false;
+		try{
+			SelectFromWhere sfw = new SelectFromWhere(
+					null,
+					rl.getTable().toLowerCase(),
+					rl.getValue(Constants.KEY_NODE_UUID));
+			
+			// this method will fail if there is no archived item in the database,
+			// because the column will not exist...
+			returnValue=reportingDAO.reportingArchivedDateIsEmpty(sfw);
+			if (logger.isDebugEnabled()) 
+				logger.debug("archivedDateIsEmpty returning "  + returnValue);
+		} catch (Exception e) {
+			logger.fatal("Exception archivedDateIsEmpty: " + e.getMessage());
 			throw new Exception(e);
 		}	
 		return returnValue;

@@ -27,6 +27,13 @@ select 1;
 		AND    UPPER(tablename)  = UPPER(#{from})
 </select>
 
+<select id="reporting-archiveddate-is-empty" parameterType="SelectFromWhere" resultType="int">
+	SELECT count(*) FROM ${from} 
+		WHERE sys_node_uuid LIKE #{where} 
+		  AND isLatest=1
+		  AND sys_archiveddate IS NULL
+</select>
+
 <insert id="reporting-create-empty-table" parameterType="SelectFromWhere"  flushCache="true"> 
 	CREATE TABLE ${from} (
 		id bigserial PRIMARY KEY,
