@@ -57,6 +57,11 @@ public class Constants {
 //	public final static String property_harvesting_batchTimestampEnabled = "reporting.harvest.batchTimestamp.enabled";
 	public final static String property_resetStatusAtStartupEnabled = "reporting.resetStatusAtStartup.enabled";
 	
+	public final static String PROPERTY_HARVEST_DOCUMENT_TABLES="reporting.harvest.document.tables";
+	public final static String PROPERTY_HARVEST_DOCUMENT_TYPE="reporting.harvest.document.type";
+	public final static String PROPERTY_HARVEST_FOLDER_TABLES="reporting.harvest.folder.tables";
+	public final static String PROPERTY_HARVEST_FOLDER_TYPE="reporting.harvest.folder.type";
+	
 	public final static String TABLE_PERSON = "person";
 	public final static String TABLE_GROUPS = "groups";
 	public final static String TABLE_SITEPERSON = "siteperson";

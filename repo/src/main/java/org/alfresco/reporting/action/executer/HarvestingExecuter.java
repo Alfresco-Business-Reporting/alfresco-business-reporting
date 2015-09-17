@@ -72,10 +72,6 @@ public class HarvestingExecuter extends ActionExecuterAbstractBase {
 	
 	@Override
 	protected void executeImpl(final Action action, final NodeRef harvestDefNodeRef) {
-		
-		ActionService actionService = serviceRegistry.getActionService();
-		Action harvestArchiveAction = actionService.createAction(HarvestArchiveExecuter.NAME);
-		actionService.executeAction(harvestArchiveAction, harvestDefNodeRef);
 
 		/*
 		 * TARGET_TYPE is one of
@@ -84,7 +80,7 @@ public class HarvestingExecuter extends ActionExecuterAbstractBase {
 		 *   all	--> process all
 		 *   null 	--> process curent NodeRef
 		 */
-/*		String frequency = (String)action.getParameterValue(PARAM_FREQUENCY);
+		String frequency = (String)action.getParameterValue(PARAM_FREQUENCY);
 		
 		
 		String fullQuery = getHarvestingDefinitionQuery(frequency);
@@ -170,7 +166,7 @@ public class HarvestingExecuter extends ActionExecuterAbstractBase {
 				} //end else
 			}
 		} // end else
-*/			
+		
 	}
 
 	

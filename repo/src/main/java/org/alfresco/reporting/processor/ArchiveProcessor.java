@@ -3,6 +3,7 @@ package org.alfresco.reporting.processor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.reporting.Constants;
@@ -40,14 +41,7 @@ public class ArchiveProcessor {
 	private HashMap<String,ArrayList<NodeRef>> queues = new HashMap<String,ArrayList<NodeRef>>();
 	
 	//TODO: compare Qnames correctly!
-	// type<->table mapping. i.e. <"cm:document", <document, datalistitem>
-	private TypeTableMap documentMap = new TypeTableMap();
-	private TypeTableMap folderMap = new TypeTableMap();
-	
-	private String TYPE_DOCUMENT="content";
-	private String TYPE_FOLDER="folder";
-	
-	public ArchiveProcessor(ServiceRegistry serviceRegistry, DatabaseHelperBean dbhb, ReportingHelper reportingHelper){
+		public ArchiveProcessor(ServiceRegistry serviceRegistry, DatabaseHelperBean dbhb, ReportingHelper reportingHelper){
 		this.serviceRegistry = serviceRegistry;
 		this.dbhb = dbhb;
 		this.reportingHelper = reportingHelper;
@@ -64,18 +58,11 @@ public class ArchiveProcessor {
 	 * 
 	 * 
 	 */
-	
-	public void harvestArchive() {
-		
-		//Create TYPE->tablename mapping (for testing purposes), should be defined in properties or harvestdefinition
-		documentMap.setType(TYPE_DOCUMENT);
-		documentMap.addTable("document");
-		//documentMap.addTable("datalistitem");
-		folderMap.setType(TYPE_FOLDER);
-		folderMap.addTable("folder");
-		
+	/**
+	 * @param maps containing the TypeTableMap objects that specify the types and corresponding tables
+	 */
+	public void harvestArchive(ArrayList<TypeTableMap> maps) {		
 		try {
-			//nodeRefProcessor to reuse methods
 			nodeRefProcessor = new NodeRefBasedPropertyProcessor(
 					null, 
 					dbhb, 
@@ -93,9 +80,9 @@ public class ArchiveProcessor {
 				if (logger.isDebugEnabled())logger.debug("Adding to archivedNodes: "+archivedNodeRef);
 				archivedNodes.add(archivedNodeRef);
 			}
-			archivedNodes = sortQueue(documentMap, archivedNodes);
-			if(archivedNodes != null){
-				archivedNodes = sortQueue(folderMap, archivedNodes);
+			//process type/tables/nodes for every TypeTableMap
+			for(TypeTableMap map : maps){
+				archivedNodes = sortQueue(map, archivedNodes);
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -122,31 +109,6 @@ public class ArchiveProcessor {
 		}
 		processQueue(currentQueue, mapping);
 		return leftOverArchivedNodes;
-/*
-		
-		
-		
-		if (logger.isDebugEnabled())logger.debug("Sorting nodes of type "+type+" for table "+tablename);
-		ArrayList<NodeRef> currentQueue;
-		//check if queues exist, else create new
-		if(queues.containsKey(tablename)){
-			currentQueue = queues.get(tablename);
-		}else{
-			currentQueue = new ArrayList<NodeRef>();
-		}
-		//nodes that where not 
-		ArrayList<NodeRef> leftOverArchivedNodes = new ArrayList<NodeRef>(archivedNodes);
-		for(NodeRef nodeRef : archivedNodes){
-			if(nodeService.getType(nodeRef).toPrefixString().equals(type)){
-				if (logger.isDebugEnabled()){
-					logger.debug("adding "+nodeService.getProperty(nodeRef, ContentModel.PROP_NAME)+" to "+tablename+" queue.");
-				}
-				currentQueue.add(nodeRef);
-				leftOverArchivedNodes.remove(nodeRef);
-			}
-		}
-		archivedNodes = leftOverArchivedNodes;
-		queues.put(tablename, currentQueue);*/
 	}
 	
 
@@ -163,29 +125,7 @@ public class ArchiveProcessor {
 			queue = processNodesForTable(tablename, queue);
 			if(queue.isEmpty()) break;
 		}
-/*		//process all sortedqueues
-		for (HashMap.Entry<String, ArrayList<NodeRef>> entry : queues.entrySet()) {
-		    String tablename = entry.getKey();
-		    ArrayList<NodeRef> queue = entry.getValue();
-		    ReportLine rl = new ReportLine(tablename, nodeRefProcessor.getSimpleDateFormat(), reportingHelper);
-		    //process nodes in sortedQueue
-		    for(NodeRef nodeRef : queue){
-		    	String uuid = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NODE_UUID);
-		    	if (logger.isDebugEnabled()) logger.debug("Checking if "+nodeService.getProperty(nodeRef, ContentModel.PROP_NAME)+" exists in table "+tablename+" uuid: "+uuid);
-		    	try {
-		    		nodeRefProcessor.processNodeToMap(nodeRef.toString(), tablename, rl);
-					if(dbhb.rowExists(rl)){
-						logger.info("lines updated into table: "+dbhb.updateIntoTable(rl));
-					}
-				} catch (Exception e) {
-					logger.error(e);
-				}
-		    	
-		    }
-		}*/
-		
 	}
-	
 	
 	/**
 	 * @param tablename
@@ -199,7 +139,13 @@ public class ArchiveProcessor {
 			try {
 				nodeRefProcessor.processNodeToMap(nodeRef.toString(), tablename, rl);
 				if(dbhb.rowExists(rl)){
-					logger.info("lines updated into table: "+dbhb.updateIntoTable(rl));
+					if(dbhb.archivedDateIsEmpty(rl)){
+						dbhb.updateArchivedIntoTable(rl);
+						if(logger.isDebugEnabled()) logger.debug("ArchivedDate was null, new row added for "+ nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
+					}else{
+						dbhb.updateIntoTable(rl);
+						if (logger.isDebugEnabled()) logger.debug("ArchivedDate was NOT null, previous record was updatet: "+nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
+					}
 				}else{
 					nodesNotInTable.remove(nodeRef);
 				}
@@ -207,8 +153,8 @@ public class ArchiveProcessor {
 				logger.error(e);
 			}
 		}
+		//TODO update lastsucesrun for this table
 		return nodesNotInTable;
 	}
-	
 
 }

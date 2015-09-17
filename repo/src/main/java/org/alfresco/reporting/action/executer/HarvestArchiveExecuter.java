@@ -18,13 +18,16 @@
 
 package org.alfresco.reporting.action.executer;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.alfresco.repo.action.executer.ActionExecuterAbstractBase;
 import org.alfresco.reporting.Constants;
 import org.alfresco.reporting.ReportingHelper;
 import org.alfresco.reporting.db.DatabaseHelperBean;
 import org.alfresco.reporting.processor.ArchiveProcessor;
+import org.alfresco.reporting.processor.TypeTableMap;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
@@ -38,15 +41,29 @@ public class HarvestArchiveExecuter extends ActionExecuterAbstractBase {
 	private ServiceRegistry serviceRegistry;
 	private DatabaseHelperBean dbhb;
 	private ReportingHelper reportingHelper;
+	private Properties globalProps;
 	public static final String NAME = "harvestArchiveExecuter";
 	
 	private static Log logger = LogFactory.getLog(HarvestArchiveExecuter.class);
 
 	@Override
 	protected void executeImpl(final Action action, final NodeRef nodeRef) {
+		
+		
+		//TODO: get properties
+		this.globalProps.getProperty(Constants.Pr, "true").equalsIgnoreCase("true");
+		
+		// type<->table mapping. i.e. <"cm:document", <document, datalistitem>
+		TypeTableMap documentMap = new TypeTableMap();
+		TypeTableMap folderMap = new TypeTableMap();
+
+		ArrayList<TypeTableMap> maps = new ArrayList<TypeTableMap>();
+		maps.add(documentMap);
+		maps.add(folderMap);
+		
 		if (logger.isDebugEnabled())logger.debug("HarvestArchiveExecuter called");
 		ArchiveProcessor archiveProcessor = new ArchiveProcessor(serviceRegistry, dbhb, reportingHelper);
-		archiveProcessor.harvestArchive();
+		archiveProcessor.harvestArchive(maps);
 	}
 
 
@@ -82,4 +99,13 @@ public class HarvestArchiveExecuter extends ActionExecuterAbstractBase {
 	public void setReportingHelper(ReportingHelper reportingHelper) {
 		this.reportingHelper = reportingHelper;
 	}
+	
+	public Properties getGlobalProps() {
+		return globalProps;
+	}
+
+	public void setGlobalProps(Properties globalProps) {
+		this.globalProps = globalProps;
+	}
+	
 }

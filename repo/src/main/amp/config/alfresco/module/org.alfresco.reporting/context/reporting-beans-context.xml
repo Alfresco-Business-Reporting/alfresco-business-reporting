@@ -274,6 +274,9 @@
 		<property name="reportingHelper">
 			<ref bean="ReportingHelper" />
 		</property>
+		<property name="globalProperties">
+			<ref bean="global-properties" />
+		</property>
 	</bean>
 	
 
