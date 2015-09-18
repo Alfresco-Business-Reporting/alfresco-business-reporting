@@ -516,13 +516,15 @@ public class DatabaseHelperBean {
 		logger.debug("enter updateVersionedIntoTable modified=" 
 				+ rl.getValue(Constants.KEY_MODIFIED) + " vs. archived="
 				+ rl.getValue(Constants.KEY_ARCHIVED_DATE));
-		try{
-			SimpleDateFormat sdf = reportingHelper.getSimpleDateFormat();
+		try{			
+			//If item is archived, do not check modified date, because it uses archivedDate
+			boolean isArchivedItem = true;
+			if(rl.getValue(Constants.KEY_ARCHIVED_DATE) != null && rl.getValue(Constants.KEY_ARCHIVED_DATE).isEmpty()){
+				isArchivedItem = false;
+			}
 			
-			if (//rl.getValue("cm_modified")!=null) &&
-					!rowEqualsModifiedDate(rl, rl.getValue(Constants.KEY_MODIFIED) )){
+			if (!rowEqualsModifiedDate(rl, rl.getValue(Constants.KEY_MODIFIED)) || isArchivedItem){
 				try{
-					//sdf.parse(rl.getValue("cm_modified")); // read the cm_modified, and return a decent MySQL date format
 					logger.debug("updateVersionedIntoTable table=" + rl.getTable());
 					logger.debug("updateVersionedIntoTable vaidUntil="+ rl.getValue(Constants.KEY_MODIFIED)); // sdf.parse
 					logger.debug("updateVersionedIntoTable sys_ode_uuid=" + rl.getValue(Constants.KEY_NODE_UUID));
@@ -556,53 +558,7 @@ public class DatabaseHelperBean {
 			throw new Exception(e);
 		}
 		//return 0;
-	}
-	
-	/**
-	 * @param rl
-	 * @return int number of affected rows
-	 * @throws Exception
-	 * updates an archived node in table. Does not check for modified like updateVersionedIntoTable, because archived nodes use archivedDate
-	 */
-	public int updateArchivedIntoTable(ReportLine rl) throws Exception{
-		logger.debug("enter updateVersionedIntoTable modified=" 
-				+ rl.getValue(Constants.KEY_MODIFIED) + " vs. archived="
-				+ rl.getValue(Constants.KEY_ARCHIVED_DATE));
-		try{
-			SimpleDateFormat sdf = reportingHelper.getSimpleDateFormat();
-				try{
-					//sdf.parse(rl.getValue("cm_modified")); // read the cm_modified, and return a decent MySQL date format
-					logger.debug("updateVersionedIntoTable table=" + rl.getTable());
-					logger.debug("updateVersionedIntoTable vaidUntil="+ rl.getValue(Constants.KEY_MODIFIED)); // sdf.parse
-					logger.debug("updateVersionedIntoTable sys_ode_uuid=" + rl.getValue(Constants.KEY_NODE_UUID));
-
-					String modified = "'"+rl.getValue(Constants.KEY_MODIFIED)+"'";
-					if (Constants.VENDOR_ORACLE.equalsIgnoreCase(reportingHelper.getDatabaseProvider())){
-						modified = "TO_DATE("+modified+",'yyyy-MM-dd HH24:MI:SS')";
-					}
-					
-					UpdateWhere updateWhere = new UpdateWhere(
-							rl.getTable(), // next line: sdf.parse
-							"validUntil=" + modified + "" , // isLatest=0 added in template
-							"sys_node_uuid LIKE '" + rl.getValue(Constants.KEY_NODE_UUID)+"'"); // AND (isLatest=1) added in template
-					reportingDAO.reportingUpdateVersionedIntoTable(updateWhere);
-					logger.debug("exit updateVersionedIntoTable");
-					return insertIntoTable(rl);
-					
-				} catch (Exception e){
-
-					logger.fatal("Exception updateVersionedIntoTable1: " + e.getMessage());
-					throw new Exception(e);
-
-				}
-		} catch (Exception e) {
-			logger.fatal("Exception updateVersionedIntoTable2: " + e.getMessage());
-			throw new Exception(e);
-		}
-		//return 0;
-	
-	}
-	
+	}	
 	
 	public int updateIntoTable(ReportLine rl) throws Exception{
 		logger.debug("enter updateIntoTable");

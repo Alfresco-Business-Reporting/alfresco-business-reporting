@@ -61,6 +61,7 @@ public class Constants {
 	public final static String PROPERTY_HARVEST_DOCUMENT_TYPE="reporting.harvest.document.type";
 	public final static String PROPERTY_HARVEST_FOLDER_TABLES="reporting.harvest.folder.tables";
 	public final static String PROPERTY_HARVEST_FOLDER_TYPE="reporting.harvest.folder.type";
+	public final static String PROPERTY_HARVEST_ARCHIVE_INDEXED="reporting.harvest.archive.indexed";
 	
 	public final static String TABLE_PERSON = "person";
 	public final static String TABLE_GROUPS = "groups";

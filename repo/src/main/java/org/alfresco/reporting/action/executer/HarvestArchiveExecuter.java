@@ -37,61 +37,79 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class HarvestArchiveExecuter extends ActionExecuterAbstractBase {
-	
+
 	private ServiceRegistry serviceRegistry;
 	private DatabaseHelperBean dbhb;
 	private ReportingHelper reportingHelper;
 	private Properties globalProps;
 	public static final String NAME = "harvestArchiveExecuter";
-	
+
 	private static Log logger = LogFactory.getLog(HarvestArchiveExecuter.class);
 
 	@Override
 	protected void executeImpl(final Action action, final NodeRef nodeRef) {
-		
-		
-		//TODO: get properties
-		this.globalProps.getProperty(Constants.Pr, "true").equalsIgnoreCase("true");
-		
-		// type<->table mapping. i.e. <"cm:document", <document, datalistitem>
-		TypeTableMap documentMap = new TypeTableMap();
-		TypeTableMap folderMap = new TypeTableMap();
 
-		ArrayList<TypeTableMap> maps = new ArrayList<TypeTableMap>();
-		maps.add(documentMap);
-		maps.add(folderMap);
-		
-		if (logger.isDebugEnabled())logger.debug("HarvestArchiveExecuter called");
-		ArchiveProcessor archiveProcessor = new ArchiveProcessor(serviceRegistry, dbhb, reportingHelper);
-		archiveProcessor.harvestArchive(maps);
+		boolean archiveIndexed = globalProps.getProperty(Constants.PROPERTY_HARVEST_ARCHIVE_INDEXED, "true")
+				.equalsIgnoreCase("true");
+
+		//If archived is indexed, it is not necessary to crawl through the archive-store using this action
+		if (!archiveIndexed) {
+
+			// type<->table mapping. i.e. <"cm:document", <document,datalistitem>
+			TypeTableMap documentMap = new TypeTableMap();
+			documentMap.setType(globalProps.getProperty(Constants.PROPERTY_HARVEST_DOCUMENT_TYPE, "content"));
+			documentMap.setTables(
+					getTableNames(globalProps.getProperty(Constants.PROPERTY_HARVEST_DOCUMENT_TABLES)));
+
+			TypeTableMap folderMap = new TypeTableMap();
+			folderMap.setType(globalProps.getProperty(Constants.PROPERTY_HARVEST_FOLDER_TYPE, "folder"));
+			folderMap.setTables(
+					getTableNames(globalProps.getProperty(Constants.PROPERTY_HARVEST_FOLDER_TABLES, "folder")));
+
+			ArrayList<TypeTableMap> maps = new ArrayList<TypeTableMap>();
+			maps.add(documentMap);
+			maps.add(folderMap);
+
+			if (logger.isDebugEnabled())
+				logger.debug("HarvestArchiveExecuter called");
+			ArchiveProcessor archiveProcessor = new ArchiveProcessor(serviceRegistry, dbhb, reportingHelper);
+			archiveProcessor.harvestArchive(maps);
+		} else {
+			logger.error("Archive is indexed, this action is not available. Set "+Constants.PROPERTY_HARVEST_ARCHIVE_INDEXED+" to false to enable this action.");
+		}
 	}
 
+	private ArrayList<String> getTableNames(String properties) {
+		ArrayList<String> tablenames= new ArrayList<String>();
+		String[] splittedProps = properties.split(",");
+		for (String s : splittedProps){
+			logger.debug(s);
+			tablenames.add(s);
+		}
+		return tablenames;
+	}
 
 	@Override
 	protected void addParameterDefinitions(List<ParameterDefinition> arg0) {
 		// TODO Auto-generated method stub
 	}
 
-
 	public ServiceRegistry getServiceRegistry() {
 		return serviceRegistry;
 	}
-
 
 	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}
 
-
 	public DatabaseHelperBean getDatabaseHelperBean() {
 		return dbhb;
 	}
 
-
 	public void setDatabaseHelperBean(DatabaseHelperBean dbhb) {
 		this.dbhb = dbhb;
 	}
-	
+
 	public ReportingHelper getReportingHelper() {
 		return reportingHelper;
 	}
@@ -99,13 +117,13 @@ public class HarvestArchiveExecuter extends ActionExecuterAbstractBase {
 	public void setReportingHelper(ReportingHelper reportingHelper) {
 		this.reportingHelper = reportingHelper;
 	}
-	
-	public Properties getGlobalProps() {
+
+	public Properties getGlobalProperties() {
 		return globalProps;
 	}
 
-	public void setGlobalProps(Properties globalProps) {
+	public void setGlobalProperties(Properties globalProps) {
 		this.globalProps = globalProps;
 	}
-	
+
 }

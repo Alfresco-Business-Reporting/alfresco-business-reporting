@@ -45,6 +45,7 @@
 				<evaluator>evaluator.reporting.hasReportingRootableAspect
 				</evaluator>
 			</action>
+			<!-- 
 			<action id="harvestArchiveExecuter" type="javascript"
 				label="reporting.actions.harvestArchiveExecuter" icon="database_go">
 				<param name="function">onActionSimpleRepoAction</param>
@@ -56,31 +57,32 @@
 				<evaluator>evaluator.reporting.hasReportingRootableAspect
 				</evaluator>
 			</action>
+			 -->
 		</actions>
 		<actionGroups>
 			<actionGroup id="document-browse">
 				<action id="harvesting-executer" />
 				<action id="report-executer" />
 				<action id="report-root-executer" />
-				<action id="harvestArchiveExecuter" />
+				<!--  <action id="harvestArchiveExecuter" /> -->
 			</actionGroup>
 			<actionGroup id="document-details">
 				<action id="harvesting-executer" />
 				<action id="report-executer" />
 				<action id="report-root-executer" />
-				<action id="harvestArchiveExecuter" />
+				<!--  <action id="harvestArchiveExecuter" /> -->
 			</actionGroup>
 			<actionGroup id="folder-browse">
 				<action id="report-executer" />
 				<action id="report-root-executer" />
 				<action id="harvest-all-executer" />
-				<action id="harvestArchiveExecuter" />
+				<!--  <action id="harvestArchiveExecuter" /> -->
 			</actionGroup>
 			<actionGroup id="folder-details">
 				<action id="report-executer" />
 				<action id="report-root-executer" />
 				<action id="harvest-all-executer" />
-				<action id="harvestArchiveExecuter" />
+				<!--  <action id="harvestArchiveExecuter" /> -->
 			</actionGroup>
 		</actionGroups>
 	</config>
