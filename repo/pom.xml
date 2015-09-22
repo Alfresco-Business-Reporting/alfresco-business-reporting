@@ -34,6 +34,7 @@
 			<version>4.0.2</version>
 		</dependency>
 
+		<!-- Pentaho dependencies -->
 		<dependency>
 			<groupId>pentaho-reporting-engine</groupId>
 			<artifactId>pentaho-reporting-engine-classic-core</artifactId>
@@ -105,6 +106,50 @@
 			<artifactId>librepository</artifactId>
 			<version>${pentaho-reporting-version}</version>
 		</dependency>
+
+ 		<dependency>
+			<groupId>pentaho-reporting-engine</groupId>
+			<artifactId>pentaho-reporting-engine-classic-extensions</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-reporting-engine</groupId>
+			<artifactId>pentaho-reporting-engine-legacy-charts</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pentaho-reporting-engine</groupId>
+			<artifactId>pentaho-reporting-engine-legacy-functions</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+ 		<dependency>
+			<groupId>pentaho</groupId>
+			<artifactId>pentaho-versionchecker</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>
+
+<!-- 	java.lang.VerifyError: Cannot inherit from final class	
+		<dependency>
+			<groupId>pentaho</groupId>
+			<artifactId>pentaho-metadata</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency>  -->
+
+ 		<dependency>
+			<groupId>pentaho</groupId>
+			<artifactId>pentaho-cwm</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+
+		<!-- 
+		<dependency>
+			<groupId>pentaho</groupId>
+			<artifactId>pentaho-database-gwt</artifactId>
+			<version>${pentaho-reporting-version}</version>
+		</dependency> -->
 
 	</dependencies>
 
