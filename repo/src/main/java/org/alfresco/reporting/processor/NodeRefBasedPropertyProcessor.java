@@ -20,6 +20,7 @@ package org.alfresco.reporting.processor;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
@@ -64,6 +67,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * This class accepts an Alfresco object (document or folder), strips out all
@@ -129,15 +134,6 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor {
 			this.COLUMN_SIZE = Constants.COLUMN_SIZE_ORACLE;
 		} else {
 			this.COLUMN_SIZE = Constants.COLUMN_SIZE;
-		}
-
-		if (logger.isDebugEnabled() && false) {
-			logger.debug("##this.dataDictionary       =" + this.dataDictionary);
-			logger.debug("##this.replacementDataTypes =" + this.replacementDataTypes);
-			// logger.debug("##this.getGlobalProperties() =" +
-			// this.getGlobalProperties());
-			logger.debug("##this.namespaces           =" + this.namespaces);
-			// logger.debug("##this.versionnodes =" + getVersionNodes());
 		}
 	}
 
@@ -826,7 +822,7 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor {
 			}
 
 		} // end for sn:queue
-		// logger.debug("Exit processQueueDefinition");
+			// logger.debug("Exit processQueueDefinition");
 		return definition;
 	}
 
@@ -901,7 +897,7 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor {
 							if (logger.isDebugEnabled())
 								logger.debug("Going UPDATE_VERSIONED");
 							try {
-								if (dbhb.rowExists(rl) ) {
+								if (dbhb.rowExists(rl)) {
 									numberOfRows = dbhb.updateVersionedIntoTable(rl);
 									// numberOfRows = dbhb.insertIntoTable(rl);
 									if (logger.isDebugEnabled())
@@ -1003,7 +999,7 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor {
 			Enumeration<Object> keys = queries.keys();
 
 			String fullQuery; // is the actual query appending orderby
-								// node-dbid, and lastmodifued clause
+								// node-dbid, and lastmodified clause
 
 			// Cycle all Lucene queries
 			while (keys.hasMoreElements()) {
@@ -1025,6 +1021,7 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor {
 				// prevent having two threads doing the same
 				if (!dbhb.tableIsRunning(tableName)) {
 
+					//Date used for LastSuccesFulRun
 					String nowFormattedDate = getNowAsFormattedString();
 
 					String timestamp = "";
@@ -1041,225 +1038,217 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor {
 
 						StoreRef storeRef = storeIterator.next();
 
-							// mew insight, limit the number of loops, treat
-							// mechanism with more care
-							if (getBatchTimestampEnabled()) {
-								dbhb.setLastTimestampStatusRunning(
-										tableName + "_" + storeRef.getProtocol().substring(0, 1));
-								timestamp = dbhb
-										.getLastTimestamp(tableName + "_" + storeRef.getProtocol().substring(0, 1));
-							}
+						// mew insight, limit the number of loops, treat
+						// mechanism with more care
+						if (getBatchTimestampEnabled()) {
+							dbhb.setLastTimestampStatusRunning(
+									tableName + "_" + storeRef.getProtocol().substring(0, 1));
+							timestamp = dbhb.getLastTimestamp(tableName + "_" + storeRef.getProtocol().substring(0, 1));
+							timestamp = getDelayedTimestamp(timestamp);
+						}
 
-							if (logger.isDebugEnabled())
-								logger.debug("harvest: StoreRef=" + storeRef.getProtocol() + ", archiveAllowed="
+						if (logger.isDebugEnabled())
+							logger.debug("harvest: StoreRef=" + storeRef.getProtocol() + ", archiveAllowed="
+									+ archiveAllowed);
+
+						// (re)set some essential process markers.
+						// These are local to the run-per-storeRef
+						long startDbId = 0; // the original database id of
+											// the noderef
+						long loopcount = 0; // count the number of
+											// harvesting loops. Should be
+											// <=2 for initial harvesting
+											// agaist factory repo
+						boolean letsContinue = true;
+
+						// break if we process the archive before the
+						// workspace is done...
+						if (storeRef.getProtocol().equals(StoreRef.PROTOCOL_ARCHIVE) && !archiveAllowed) {
+							letsContinue = false;
+						}
+
+						if (logger.isDebugEnabled())
+							logger.debug("harvest: before while, letsContinue=" + letsContinue);
+
+						while (letsContinue) {
+							loopcount++;
+
+							// hasEverRun is needed to determine if an
+							// update of lastModifiedTimestamp has occured
+							// ever in a batch, or never.
+							boolean hasEverRun = false;
+							if (logger.isInfoEnabled()) {
+								logger.info("++ Loop number: " + loopcount + ", tablename: " + tableName + ", archive: "
 										+ archiveAllowed);
-
-							// (re)set some essential process markers.
-							// These are local to the run-per-storeRef
-							long startDbId = 0; // the original database id of
-												// the noderef
-							long loopcount = 0; // count the number of
-												// harvesting loops. Should be
-												// <=2 for initial harvesting
-												// agaist factory repo
-							boolean letsContinue = true;
-
-							// break if we process the archive before the
-							// workspace is done...
-							if (storeRef.getProtocol().equals(StoreRef.PROTOCOL_ARCHIVE) && !archiveAllowed) {
-								letsContinue = false;
+							}
+							if (getBatchTimestampEnabled()) { // default =
+																// true
+								nowFormattedDate = getNowAsFormattedString();
 							}
 
-							if (logger.isDebugEnabled())
-								logger.debug("harvest: before while, letsContinue=" + letsContinue);
+							fullQuery = query + queryClauseTimestamp(language, timestamp, storeRef.getProtocol())
+									+ queryClauseOrderBy(language, startDbId, storeRef.getProtocol());
 
-							while (letsContinue) {
-								loopcount++;
+							if (logger.isDebugEnabled()) {
+								logger.debug("harvest: StoreProtocol = " + storeRef.getProtocol() + ", archive: "
+										+ archiveAllowed + "\nfullQuery = " + fullQuery);
+							}
 
-								// hasEverRun is needed to determine if an
-								// update of lastModifiedTimestamp has occured
-								// ever in a batch, or never.
-								boolean hasEverRun = false;
-								if (logger.isInfoEnabled()) {
-									logger.info("++ Loop number: " + loopcount + ", tablename: " + tableName
-											+ ", archive: " + archiveAllowed);
-								}
-								if (getBatchTimestampEnabled()) { // default =
-																	// true
-									nowFormattedDate = getNowAsFormattedString();
-								}
+							SearchParameters sp = new SearchParameters();
+							sp.setLanguage(language);
+							sp.addStore(storeRef);
+							sp.setQuery(fullQuery);
+							// sp.addSort(getOrderBy(language), true);
+							if (maxItems > 0) {
+								sp.setMaxItems(maxItems);
+							}
+							if (logger.isDebugEnabled()) {
+								logger.debug("Searchparameter query: " + sp.getQuery());
+							}
+							ResultSet results = getSearchService().query(sp);
 
-								fullQuery = query + queryClauseTimestamp(language, timestamp, storeRef.getProtocol())
-										+ queryClauseOrderBy(language, startDbId, storeRef.getProtocol());
-
-								if (logger.isDebugEnabled()) {
-									logger.debug("harvest: StoreProtocol = " + storeRef.getProtocol() + ", archive: "
-											+ archiveAllowed + "\nfullQuery = " + fullQuery);
-								}
-
-								SearchParameters sp = new SearchParameters();
-								sp.setLanguage(language);
-								sp.addStore(storeRef);
-								sp.setQuery(fullQuery);
-								// sp.addSort(getOrderBy(language), true);
-								if (maxItems > 0) {
-									sp.setMaxItems(maxItems);
-								}
-								if (logger.isDebugEnabled()) {
-									logger.debug("Searchparameter query: " + sp.getQuery());
-								}
-								ResultSet results = getSearchService().query(sp);
-
+							// allow harvesting the archive if the workspace
+							// has been done!
+							// workspace is done if there are no more search
+							// results
+							if (results.length() == 0 && !archiveAllowed) {
 								if (logger.isDebugEnabled())
-									logger.debug("harvest: prepare flipping: archiveAllowed=" + archiveAllowed
-											+ ", length=" + results.length());
+									logger.debug("harvest: flipping to archiveAllowed=true");
+								archiveAllowed = true;
+							}
 
-								// allow harvesting the archive if the workspace
-								// has been done!
-								// workspace is done if there are no more search
-								// results
-								if (results.length() == 0 && !archiveAllowed) {
-									if (logger.isDebugEnabled())
-										logger.debug("harvest: flipping to archiveAllowed=true");
-									archiveAllowed = true;
-								}
+							letsContinue = stillContinueHarvesting(loopcount, results.length());
 
-								letsContinue = stillContinueHarvesting(loopcount, results.length());
+							logger.debug("harvest: loopcount= " + loopcount + "\n" + "harvest: resultsize   = "
+									+ results.length() + "\n" + "harvest: letsContinue = " + letsContinue + "\n"
+									+ "harvest: archiveAllow = " + archiveAllowed + "\n" + "harvest: tablename    = "
+									+ tableName);
+							SimpleDateFormat sdf = getSimpleDateFormat();
 
-								logger.debug("harvest: loopcount= " + loopcount + "\n" + "harvest: resultsize   = "
-										+ results.length() + "\n" + "harvest: letsContinue = " + letsContinue + "\n"
-										+ "harvest: archiveAllow = " + archiveAllowed + "\n"
-										+ "harvest: tablename    = " + tableName);
-								SimpleDateFormat sdf = getSimpleDateFormat();
+							if (letsContinue) {
 
-								if (letsContinue) {
+								Iterator<ResultSetRow> resultsIterator = results.iterator();
+								while (resultsIterator.hasNext()) {
+									try { // be tolerant for non-existing
+											// nodes... happens to hurt
+											// leaving status=Running
+										NodeRef result = resultsIterator.next().getNodeRef();
+										if(logger.isDebugEnabled()) logger.debug("harvest noderef " + result);
+										if (!storeRef.getProtocol().equalsIgnoreCase("archive")) {
 
-									Iterator<ResultSetRow> resultsIterator = results.iterator();
-									while (resultsIterator.hasNext()) {
-										try { // be tolerant for non-existing
-												// nodes... happens to hurt
-												// leaving status=Running
-											NodeRef result = resultsIterator.next().getNodeRef();
-											logger.debug("harvest noderef " + result);
-											if (!storeRef.getProtocol().equalsIgnoreCase("archive")) {
+											if (getNodeService().hasAspect(result, ContentModel.ASPECT_VERSIONABLE)
+													// versionService.isVersioned(result)
+													&& versionService.getVersionHistory(result).getAllVersions()
+															.size() > 1) {
+												VersionHistory vh = versionService.getVersionHistory(result);
+												Iterator<Version> vhi = vh.getAllVersions().iterator();
+												String latestVersionLabel = (String) nodeService.getProperty(
+														vh.getHeadVersion().getVersionedNodeRef(),
+														ContentModel.PROP_VERSION_LABEL);
+												// Date latestDate =
+												// (Date)nodeService.getProperty(result,
+												// ContentModel.PROP_MODIFIED);
+												while (vhi.hasNext()) {
+													Version version = vhi.next();
+													String currentVersionLabel = version.getVersionLabel();
+													// Date versionDate =
+													// version.getFrozenModifiedDate();
+													// logger.debug("comparing:
+													// " +
+													// currentVersionLabel +
+													// "/" +
+													// latestVersionLabel
+													// );//+ " and " +
+													// sdf.format(versionDate)
+													// +"/"+
+													// sdf.format(latestDate));
+													if (!currentVersionLabel.equals(latestVersionLabel)) {
+														if (logger.isInfoEnabled())
+															logger.info("harvest: Adding Version " + currentVersionLabel
+																	+ " " + version.getFrozenStateNodeRef() + " - "
+																	+ result.toString()); // version.getVersionedNodeRef());
+														addToQueue(version.getFrozenStateNodeRef(), result);
+													} else {
+														if (logger.isDebugEnabled())
+															logger.info("Ignoring version " + currentVersionLabel);
+													} // end ifelse
 
-												if (getNodeService().hasAspect(result, ContentModel.ASPECT_VERSIONABLE)
-														// versionService.isVersioned(result)
-														&& versionService.getVersionHistory(result).getAllVersions()
-																.size() > 1) {
-													VersionHistory vh = versionService.getVersionHistory(result);
-													Iterator<Version> vhi = vh.getAllVersions().iterator();
-													String latestVersionLabel = (String) nodeService.getProperty(
-															vh.getHeadVersion().getVersionedNodeRef(),
-															ContentModel.PROP_VERSION_LABEL);
-													// Date latestDate =
-													// (Date)nodeService.getProperty(result,
-													// ContentModel.PROP_MODIFIED);
-													while (vhi.hasNext()) {
-														Version version = vhi.next();
-														String currentVersionLabel = version.getVersionLabel();
-														// Date versionDate =
-														// version.getFrozenModifiedDate();
-														// logger.debug("comparing:
-														// " +
-														// currentVersionLabel +
-														// "/" +
-														// latestVersionLabel
-														// );//+ " and " +
-														// sdf.format(versionDate)
-														// +"/"+
-														// sdf.format(latestDate));
-														if (!currentVersionLabel.equals(latestVersionLabel)) {
-															if (logger.isInfoEnabled())
-																logger.info(
-																		"harvest: Adding Version " + currentVersionLabel
-																				+ " " + version.getFrozenStateNodeRef()
-																				+ " - " + result.toString()); // version.getVersionedNodeRef());
-															addToQueue(version.getFrozenStateNodeRef(), result);
-														} else {
-															if (logger.isDebugEnabled())
-																logger.info("Ignoring version " + currentVersionLabel);
-														} // end ifelse
+												} // end while
+											} // id if
+												// hasAspect(versionable)
 
-													} // end while
-												} // id if
-													// hasAspect(versionable)
+										} // end exclude Archive
 
-											} // end exclude Archive
-
-											// all versions should be post-fixed
-											// with their head version workspace
-											// ref
-											if (!result.toString().startsWith("version")) {
-												if (logger.isDebugEnabled())
-													logger.debug("harvest: " + " adding NodeRef " + result);
-												addToQueue(result);
-											}
-										} catch (Exception e) {
-											// ignore, we need to buffer for
-											// non-existing nodes...
-											logger.info("NodeRef appears broken: " + e.getMessage());
-											logger.info("   " + e.getStackTrace());
-										}
-									} // end resultsIterator
-
-									try {
-										// process the current queue
-										Properties props = processQueueDefinition(tableName);
-										if (logger.isDebugEnabled())
-											logger.debug("harvest: queueDef done, setting tableDefinition");
-
-										setTableDefinition(tableName, props);
-										if (logger.isDebugEnabled())
-											logger.debug("harvest: tableDef done. Processing queue Values");
-
-										processQueueValues(tableName);
-
-										// prep the queue for the next run
-										resetQueue();
-
-										if (results.length() > 0) {
-											// prepare the dbid for the next run
-											startDbId = Long.parseLong(String.valueOf(getNodeService().getProperty(
-													results.getNodeRef(results.length() - 1),
-													ContentModel.PROP_NODE_DBID)));
-
-											lastModified = (Date) getNodeService().getProperty(
-													results.getNodeRef(results.length() - 1),
-													ContentModel.PROP_MODIFIED);
-											if (logger.isDebugEnabled()) {
-												logger.debug("harvest: StoreProtocol = " + storeRef.getProtocol());
-												logger.debug("harvest: New start DBID=" + startDbId);
-												logger.debug("harvest: New lastModified=" + lastModified);
-											}
+										// all versions should be post-fixed
+										// with their head version workspace
+										// ref
+										if (!result.toString().startsWith("version")) {
+											if (logger.isDebugEnabled())
+												logger.debug("harvest: " + " adding NodeRef " + result);
+											addToQueue(result);
 										}
 									} catch (Exception e) {
-										logger.info("harvest: something wrong with the noderef, skipping");
+										// ignore, we need to buffer for
+										// non-existing nodes...
+										logger.info("NodeRef appears broken: " + e.getMessage());
+										logger.info("   " + e.getStackTrace());
 									}
+								} // end resultsIterator
 
-									if ((results.length() > 0) && getBatchTimestampEnabled()
-											&& (lastModified != null)) {
-										if (logger.isDebugEnabled())
-											logger.debug("Setting Batch-based timestamp: "
-													+ getDateAsFormattedString(lastModified));
-										dbhb.setLastTimestamp(tableName + "_" + storeRef.getProtocol().substring(0, 1),
-												getDateAsFormattedString(lastModified));
-										hasEverRun = true;
-									}
+								try {
+									// process the current queue
+									Properties props = processQueueDefinition(tableName);
+									if (logger.isDebugEnabled())
+										logger.debug("harvest: queueDef done, setting tableDefinition");
 
-								} // end if(letsContinue)
-								if ((!letsContinue) && (results.length() == 0)) {
-									// register lastruntimestamp anyway
-									if (hasEverRun) {
-										dbhb.setAllStatusesDoneForTable();
-									} else {
-										dbhb.setLastTimestampAndStatusDone(
-												tableName + "_" + storeRef.getProtocol().substring(0, 1),
-												nowFormattedDate);
+									setTableDefinition(tableName, props);
+									if (logger.isDebugEnabled())
+										logger.debug("harvest: tableDef done. Processing queue Values");
+
+									processQueueValues(tableName);
+
+									// prep the queue for the next run
+									resetQueue();
+
+									if (results.length() > 0) {
+										// prepare the dbid for the next run
+										startDbId = Long.parseLong(String.valueOf(
+												getNodeService().getProperty(results.getNodeRef(results.length() - 1),
+														ContentModel.PROP_NODE_DBID)));
+
+										lastModified = (Date) getNodeService().getProperty(
+												results.getNodeRef(results.length() - 1), ContentModel.PROP_MODIFIED);
+										if (logger.isDebugEnabled()) {
+											logger.debug("harvest: StoreProtocol = " + storeRef.getProtocol());
+											logger.debug("harvest: New start DBID=" + startDbId);
+											logger.debug("harvest: New lastModified=" + lastModified);
+										}
 									}
+								} catch (Exception e) {
+									logger.info("harvest: something wrong with the noderef, skipping");
 								}
-								letsContinue = stillContinueHarvesting(loopcount, results.length());
-							} // end while letsContinue
+
+								if ((results.length() > 0) && getBatchTimestampEnabled() && (lastModified != null)) {
+									if (logger.isDebugEnabled())
+										logger.debug("Setting Batch-based timestamp: "
+												+ getDateAsFormattedString(lastModified));
+									dbhb.setLastTimestamp(tableName + "_" + storeRef.getProtocol().substring(0, 1),
+											getDateAsFormattedString(lastModified));
+									hasEverRun = true;
+								}
+
+							} // end if(letsContinue)
+							if ((!letsContinue) && (results.length() == 0)) {
+								// register lastruntimestamp anyway
+								if (hasEverRun) {
+									dbhb.setAllStatusesDoneForTable();
+								} else {
+									dbhb.setLastTimestampAndStatusDone(
+											tableName + "_" + storeRef.getProtocol().substring(0, 1), nowFormattedDate);
+								}
+							}
+							letsContinue = stillContinueHarvesting(loopcount, results.length());
+						} // end while letsContinue
 
 					} // end storeProtocol
 
@@ -1388,6 +1377,32 @@ public class NodeRefBasedPropertyProcessor extends PropertyProcessor {
 		}
 
 		return p;
+	}
+	
+	/**
+	 * Only applicable for MySQL for now
+	 * @param dateAsString
+	 * @return
+	 */
+	private String getDelayedTimestamp(String dateAsString){
+		int delay = 0;
+		try{
+			delay = Integer.parseInt(globalProperties.getProperty(Constants.PROPERTY_HARVEST_DELAY));
+		}catch(Exception e){
+			logger.error("Invalid harvest.delay property, using 0");
+		}
+		try{
+		    SimpleDateFormat dateFormat = reportingHelper.getSimpleDateFormat();
+		    Date date = dateFormat.parse(dateAsString);
+		    long newDateInMillisceonds = (date.getTime() - delay);
+		    date = new Date(newDateInMillisceonds);
+		    dateAsString = dateFormat.format(date);
+		}catch(Exception e){
+			logger.error("Error calculating the delayed timestamp: ", e);
+		}
+		if(logger.isDebugEnabled())logger.debug("Returning timestamp minus delay property: "+dateAsString);
+		
+		return dateAsString;
 	}
 
 }
